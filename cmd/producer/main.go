@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
@@ -11,14 +13,19 @@ func main() {
 	deliveryChannel := make(chan kafka.Event)
 	producer := NewKafkaProducer()
 
-	Publish("transferred", "teste", producer, []byte("transfer"), deliveryChannel)
-	go DeliveryReport(deliveryChannel)
-	producer.Flush(5000)
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Enter message: ")
+		text, _ := reader.ReadString('\n')
+		Publish(text, "transactions", producer, []byte("transfer"), deliveryChannel)
+		go DeliveryReport(deliveryChannel)
+		producer.Flush(5000)
+	}
 }
 
 func NewKafkaProducer() *kafka.Producer {
 	configMap := &kafka.ConfigMap{
-		"bootstrap.servers":   "0.0.0.0:9092",
+		"bootstrap.servers":   "kafka:9092",
 		"delivery.timeout.ms": "0",
 		"acks":                "all",
 		"enable.idempotence":  "true",

@@ -8,7 +8,7 @@ import (
 
 func main() {
 	configMap := &kafka.ConfigMap{
-		"bootstrap.servers": "0.0.0.0:9092",
+		"bootstrap.servers": "kafka:9092",
 		"client.id":         "goapp-consumer",
 		"group.id":          "goapp-group",
 		"auto.offset.reset": "earliest",
@@ -20,7 +20,7 @@ func main() {
 		fmt.Println("Error on create consumer: ", err.Error())
 	}
 
-	topics := []string{"teste"}
+	topics := []string{"transactions"}
 
 	consumer.SubscribeTopics(topics, nil)
 
